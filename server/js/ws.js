@@ -9,17 +9,13 @@ const Utils = require('./utils');
 const { Class } = require('./lib/class');
 
 function logInfo(message) {
-    if (typeof log !== 'undefined' && log && typeof log.info === 'function') {
-        log.info(message);
-    } else {
+    if (typeof console !== 'undefined' && console.info) {
         console.info(message);
     }
 }
 
 function logError(message) {
-    if (typeof log !== 'undefined' && log && typeof log.error === 'function') {
-        log.error(message);
-    } else {
+    if (typeof console !== 'undefined' && console.error) {
         console.error(message);
     }
 }
@@ -226,20 +222,25 @@ function serveStatic(req, res) {
 }
 
 const WebsocketServer = Class.extend({
-    init: function(port) {
+    init: function(port, logger) {
         this.port = port;
         this._connections = {};
         this._counter = 0;
         this.connection_callback = null;
         this.error_callback = null;
         this.status_callback = null;
+        this.log = logger || {
+            info: logInfo,
+            error: logError,
+            debug: function() {}
+        };
 
         this._httpServer = http.createServer(this._handleHttpRequest.bind(this));
         this._httpServer.on('error', this._handleServerError.bind(this));
 
         const self = this;
         this._httpServer.listen(port, function() {
-            logInfo('Server is listening on port ' + port);
+            this.log.info('HTTP/WebSocket server listening on port ' + port);
         });
 
         this._wsServer = new WebSocket.Server({ server: this._httpServer });
@@ -279,7 +280,7 @@ const WebsocketServer = Class.extend({
         if (this.error_callback) {
             this.error_callback(err);
         } else {
-            logError(err);
+                this.log.error(err);
         }
     },
 

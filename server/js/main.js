@@ -8,9 +8,10 @@ function main(config) {
         WorldServer = require("./worldserver"),
         Player = require('./player'),
         _ = require('underscore'),
-        server = new WebsocketServer(config.port),
-        metrics = config.metrics_enabled ? new Metrics(config) : null,
+        port = Number(process.env.PORT || config.port || 8000),
         log = createLogger(config.debug_level),
+        server = new WebsocketServer(port, log),
+        metrics = config.metrics_enabled ? new Metrics(config) : null,
         worlds = [],
         lastTotalPlayers = 0,
         checkPopulationInterval = setInterval(function() {
@@ -26,7 +27,9 @@ function main(config) {
             }
         }, 1000);
     
-    log.info("Starting BrowserQuest game server...");
+    config.port = port;
+
+    log.info("Starting BrowserQuest game server on port " + port + "...");
     global.log = log;
     
     server.onConnect(function(connection) {
@@ -68,7 +71,7 @@ function main(config) {
     };
 
     _.each(_.range(config.nb_worlds), function(i) {
-        var world = new WorldServer('world'+ (i+1), config.nb_players_per_world, server);
+        var world = new WorldServer('world'+ (i+1), config.nb_players_per_world, server, log);
         world.run(config.map_filepath);
         worlds.push(world);
         if(metrics) {
