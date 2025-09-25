@@ -110,6 +110,14 @@ define(['jquery', 'storage'], function($, Storage) {
                 }
                 //>>includeEnd("prodHost");
 
+                // Always override with current page location for Railway/production
+                if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                    log.debug("Detected production environment, using page location for WebSocket");
+                    var prodHost = window.location.hostname;
+                    var prodPort = window.location.port || (window.location.protocol === 'https:' ? 443 : 80);
+                    this.game.setServerOptions(prodHost, prodPort, username);
+                }
+
                 this.center();
                 this.game.run(function() {
                     $('body').addClass('started');
