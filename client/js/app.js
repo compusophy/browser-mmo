@@ -104,17 +104,8 @@ define(['jquery', 'storage'], function($, Storage) {
                 if(!optionsSet) {
                     log.debug("Starting game with build config.");
                     // In production, use current page location for WebSocket connection
-                    var host = config.build.host;
-                    var port = config.build.port;
-                    if (window.location.protocol === 'https:') {
-                        // Railway uses secure connections
-                        host = window.location.hostname;
-                        port = window.location.protocol === 'https:' ? 443 : window.location.port || 80;
-                    } else if (config.build.host === 'localhost' || !config.build.host) {
-                        // Use current page location for production
-                        host = window.location.hostname;
-                        port = window.location.port || (window.location.protocol === 'https:' ? 443 : 80);
-                    }
+                    var host = window.location.hostname;
+                    var port = window.location.port || (window.location.protocol === 'https:' ? 443 : 80);
                     this.game.setServerOptions(host, port, username);
                 }
                 //>>includeEnd("prodHost");

@@ -247,7 +247,7 @@ const WebsocketServer = Class.extend({
 
         const self = this;
         this._httpServer.listen(port, function() {
-            this.log.info('HTTP/WebSocket server listening on port ' + port);
+            self.log.info('HTTP/WebSocket server listening on port ' + port);
         });
 
         this._wsServer = new WebSocket.Server({ server: this._httpServer });
