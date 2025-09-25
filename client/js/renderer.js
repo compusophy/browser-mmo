@@ -73,13 +73,14 @@ function(Camera, Item, Character, Player, Timer) {
 
             // For full-screen immersion, calculate dynamic tilesize
             if (this.mobile && window.innerHeight > window.innerWidth) {
-                // Portrait mode: fit grid to screen
-                var availableWidth = window.innerWidth;
-                var availableHeight = window.innerHeight;
-                var gridWidth = this.camera.gridW;
-                var gridHeight = this.camera.gridH;
+                // Portrait mode: calculate expected grid dimensions
+                var gridFactor = this.mobile ? 1 : 2;
+                var gridWidth = 12 * gridFactor;  // Portrait grid width
+                var gridHeight = 15 * gridFactor; // Portrait grid height
 
                 // Calculate tilesize to fit the grid in the available space
+                var availableWidth = window.innerWidth;
+                var availableHeight = window.innerHeight;
                 var tileWidth = Math.floor(availableWidth / gridWidth);
                 var tileHeight = Math.floor(availableHeight / gridHeight);
                 this.tilesize = Math.min(tileWidth, tileHeight);
