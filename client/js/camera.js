@@ -14,12 +14,22 @@ define(function() {
     
         rescale: function() {
             var factor = this.renderer.mobile ? 1 : 2;
-        
-            this.gridW = 15 * factor;
-            this.gridH = 7 * factor;
-        
+
+            // Check if we're in portrait orientation
+            var isPortrait = window.innerHeight > window.innerWidth;
+
+            if (isPortrait && this.renderer.mobile) {
+                // Portrait mobile: make grid taller for better vertical viewing
+                this.gridW = 12 * factor;
+                this.gridH = 15 * factor;
+            } else {
+                // Default landscape aspect ratio
+                this.gridW = 15 * factor;
+                this.gridH = 7 * factor;
+            }
+
             log.debug("---------");
-            log.debug("Factor:"+factor);
+            log.debug("Factor:"+factor + " Portrait:" + isPortrait);
             log.debug("W:"+this.gridW + " H:" + this.gridH);
         },
 

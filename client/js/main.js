@@ -146,7 +146,14 @@ define(['jquery', 'app'], function($, App) {
             });
         
             document.addEventListener("touchstart", function() {},false);
-            
+
+            // Handle orientation changes for mobile devices
+            window.addEventListener("orientationchange", function() {
+                setTimeout(function() {
+                    app.resizeUi();
+                }, 500); // Small delay to ensure orientation change is complete
+            });
+
             $('#resize-check').bind("transitionend", app.resizeUi.bind(app));
             $('#resize-check').bind("webkitTransitionEnd", app.resizeUi.bind(app));
             $('#resize-check').bind("oTransitionEnd", app.resizeUi.bind(app));
