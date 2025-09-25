@@ -85,8 +85,9 @@ function(Camera, Item, Character, Player, Timer) {
                 var tileHeight = Math.floor(availableHeight / gridHeight);
                 this.tilesize = Math.min(tileWidth, tileHeight);
 
-                // Ensure minimum tilesize for readability
-                this.tilesize = Math.max(this.tilesize, 12);
+                // Ensure tilesize is reasonable for gameplay (not too large or small)
+                this.tilesize = Math.min(this.tilesize, 32); // Max tilesize for performance
+                this.tilesize = Math.max(this.tilesize, 16); // Min tilesize for readability
             } else {
                 // Default fixed tilesize for landscape/desktop
                 this.tilesize = 16;
@@ -97,15 +98,16 @@ function(Camera, Item, Character, Player, Timer) {
             this.context.mozImageSmoothingEnabled = false;
             this.background.mozImageSmoothingEnabled = false;
             this.foreground.mozImageSmoothingEnabled = false;
-        
+
             this.initFont();
             this.initFPS();
-        
+
             if(!this.upscaledRendering && this.game.map && this.game.map.tilesets) {
                 this.setTileset(this.game.map.tilesets[this.scale - 1]);
-            }
-            if(this.game.renderer) {
-                this.game.setSpriteScale(this.scale);
+                // Only set sprite scale if sprites are loaded
+                if(this.game.spritesets) {
+                    this.game.setSpriteScale(this.scale);
+                }
             }
         },
 

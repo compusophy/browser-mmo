@@ -148,10 +148,12 @@ define(['jquery', 'app'], function($, App) {
             document.addEventListener("touchstart", function() {},false);
 
             // Handle orientation changes for mobile devices
+            var resizeTimeout;
             window.addEventListener("orientationchange", function() {
-                setTimeout(function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
                     app.resizeUi();
-                }, 500); // Small delay to ensure orientation change is complete
+                }, 1000); // Longer delay to prevent multiple rapid resizes
             });
 
             $('#resize-check').bind("transitionend", app.resizeUi.bind(app));

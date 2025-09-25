@@ -328,7 +328,12 @@ function(InfoManager, BubbleManager, Renderer, Map, Animation, Sprite, AnimatedT
     
         setSpriteScale: function(scale) {
             var self = this;
-            
+
+            // Guard against spritesets not being initialized yet
+            if(!this.spritesets) {
+                return;
+            }
+
             if(this.renderer.upscaledRendering) {
                 this.sprites = this.spritesets[0];
             } else {
