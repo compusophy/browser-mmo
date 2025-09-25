@@ -1178,16 +1178,16 @@ footer, header, hgroup, menu, nav, section {
         #logo {height:84px;width:458px;position:absolute;top:5%;left:50%;margin-left:-229px;z-index:3;background-size:844px;}
 
 
-        /* UI elements positioned for full-screen immersion */
-        #healthbar {top: 20px; left: 20px;}
-        #hitpoints {top: 20px; left: 20px;}
-        #weapon {top: 50px; left: 20px;}
-        #armor {top: 80px; left: 20px;}
-        #experiencebar {top: 110px; left: 20px;}
-        #achievements {top: 140px; left: 20px;}
-        #minimap {right: 20px; top: 20px;}
-        #chatbox {bottom: 20px; left: 20px; width: calc(100vw - 40px); max-width: none;}
-        #population {bottom: 80px; left: 50%; transform: translateX(-50%);}
+        /* UI elements positioned for portrait full-screen immersion */
+        #healthbar {bottom: 200px; left: 10px;}
+        #hitpoints {bottom: 200px; left: 10px;}
+        #weapon {bottom: 170px; left: 10px;}
+        #armor {bottom: 140px; left: 10px;}
+        #experiencebar {bottom: 110px; left: 10px;}
+        #achievements {bottom: 80px; left: 10px;}
+        #minimap {bottom: 200px; right: 10px;}
+        #chatbox {bottom: 10px; left: 10px; right: 10px; width: calc(100vw - 20px); max-width: none;}
+        #population {bottom: 50px; left: 50%; transform: translateX(-50%);}
     }
     
     @media screen and (max-width: 640px) and (orientation: portrait) {
@@ -1200,16 +1200,16 @@ footer, header, hgroup, menu, nav, section {
         #logo {height:42px;width:229px;position:absolute;top:5%;left:50%;margin-left:-114px;z-index:3;background-size:422px;}
 
 
-        /* UI elements positioned for full-screen immersion on small screens */
-        #healthbar {top: 10px; left: 10px;}
-        #hitpoints {top: 10px; left: 10px;}
-        #weapon {top: 30px; left: 10px;}
-        #armor {top: 50px; left: 10px;}
-        #experiencebar {top: 70px; left: 10px;}
-        #achievements {top: 90px; left: 10px;}
-        #minimap {right: 10px; top: 10px;}
-        #chatbox {bottom: 10px; left: 10px; width: calc(100vw - 20px); max-width: none; font-size: 12px;}
-        #population {bottom: 50px; left: 50%; transform: translateX(-50%);}
+        /* UI elements positioned for portrait full-screen immersion on small screens */
+        #healthbar {bottom: 150px; left: 5px;}
+        #hitpoints {bottom: 150px; left: 5px;}
+        #weapon {bottom: 125px; left: 5px;}
+        #armor {bottom: 100px; left: 5px;}
+        #experiencebar {bottom: 75px; left: 5px;}
+        #achievements {bottom: 50px; left: 5px;}
+        #minimap {bottom: 150px; right: 5px;}
+        #chatbox {bottom: 5px; left: 5px; right: 5px; width: calc(100vw - 10px); max-width: none; font-size: 12px;}
+        #population {bottom: 30px; left: 50%; transform: translateX(-50%);}
     }
 
 /* Tablet mode */

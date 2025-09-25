@@ -70,9 +70,29 @@ function(Camera, Item, Character, Player, Timer) {
     
         rescale: function(factor) {
             this.scale = this.getScaleFactor();
-        
+
+            // For full-screen immersion, calculate dynamic tilesize
+            if (this.mobile && window.innerHeight > window.innerWidth) {
+                // Portrait mode: fit grid to screen
+                var availableWidth = window.innerWidth;
+                var availableHeight = window.innerHeight;
+                var gridWidth = this.camera.gridW;
+                var gridHeight = this.camera.gridH;
+
+                // Calculate tilesize to fit the grid in the available space
+                var tileWidth = Math.floor(availableWidth / gridWidth);
+                var tileHeight = Math.floor(availableHeight / gridHeight);
+                this.tilesize = Math.min(tileWidth, tileHeight);
+
+                // Ensure minimum tilesize for readability
+                this.tilesize = Math.max(this.tilesize, 12);
+            } else {
+                // Default fixed tilesize for landscape/desktop
+                this.tilesize = 16;
+            }
+
             this.createCamera();
-        
+
             this.context.mozImageSmoothingEnabled = false;
             this.background.mozImageSmoothingEnabled = false;
             this.foreground.mozImageSmoothingEnabled = false;
