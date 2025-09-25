@@ -69,29 +69,14 @@ function(Camera, Item, Character, Player, Timer) {
         },
     
         rescale: function(factor) {
-            this.scale = this.getScaleFactor();
-
-            // For full-screen immersion, calculate dynamic tilesize
+            // For portrait mode, use higher scale to make canvas larger
             if (this.mobile && window.innerHeight > window.innerWidth) {
-                // Portrait mode: calculate expected grid dimensions
-                var gridFactor = this.mobile ? 1 : 2;
-                var gridWidth = 12 * gridFactor;  // Portrait grid width
-                var gridHeight = 15 * gridFactor; // Portrait grid height
-
-                // Calculate tilesize to fit the grid in the available space
-                var availableWidth = window.innerWidth;
-                var availableHeight = window.innerHeight;
-                var tileWidth = Math.floor(availableWidth / gridWidth);
-                var tileHeight = Math.floor(availableHeight / gridHeight);
-                this.tilesize = Math.min(tileWidth, tileHeight);
-
-                // Ensure tilesize is reasonable for gameplay (not too large or small)
-                this.tilesize = Math.min(this.tilesize, 32); // Max tilesize for performance
-                this.tilesize = Math.max(this.tilesize, 16); // Min tilesize for readability
+                this.scale = 3; // Higher scale for portrait to make canvas bigger
             } else {
-                // Default fixed tilesize for landscape/desktop
-                this.tilesize = 16;
+                this.scale = this.getScaleFactor();
             }
+
+            this.tilesize = 16;
 
             this.createCamera();
 
