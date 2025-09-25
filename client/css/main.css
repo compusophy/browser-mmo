@@ -159,8 +159,6 @@ footer, header, hgroup, menu, nav, section {
     #notifications div.top #message1 {opacity:0;-moz-transition:0.2s opacity linear;-webkit-transition:0.2s opacity linear;-o-transition:0.2s opacity linear;-ms-transition:0.2s opacity linear;transition:0.2s opacity linear;}
     #notifications span {display:block;text-align:center;width:100%;opacity:1;-moz-user-select:none;-webkit-user-select:none;}
     
-    #playercount {font-family:'GraphicPixel';color:#e3e3e3;position:absolute;}
-    #playercount:hover {cursor:pointer;color:#FCE045;}
     #population {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;font-family:'GraphicPixel';color:#fff;text-align:center;opacity:0;pointer-events:none;-moz-transition:0.2s opacity linear, 0.2s height ease;-webkit-transition:0.2s opacity linear, 0.2s height ease;-o-transition:0.2s opacity linear, 0.2s height ease;-ms-transition:0.2s opacity linear, 0.2s height ease;transition:0.2s opacity linear, 0.2s height ease;height:0;overflow:hidden;}
     #population span:nth-child(1) {color:#FCE045;}
     #population.visible {opacity:1;pointer-events:auto;}
@@ -506,7 +504,6 @@ footer, header, hgroup, menu, nav, section {
         #notifications div.top {top:-45px;}
         #notifications span {line-height:45px;height:45px;}
 
-        #playercount {font-size:20px;left:1076px;top:18px;width:172px;text-align:center;}
         #population {background-size:1440px;right:105px;bottom:66px;width:393px;background-position:-720px -144px;font-size:20px;line-height:30px;}
         #population.visible {height:96px;}
         #instance-population {padding-top:18px;}
@@ -667,7 +664,6 @@ footer, header, hgroup, menu, nav, section {
         #notifications span {line-height:30px;height:30px;}
         .windows #notifications span {line-height:34px;}
 
-        #playercount {font-size:16px;left:717px;top:10px;width:114px;text-align:center;}
         #population {background-size:960px;right:70px;bottom:44px;width:262px;background-position:-480px -96px;font-size:14px;line-height:20px;}
         #population.visible {height:64px;}
         #instance-population {padding-top:12px;}
@@ -828,7 +824,6 @@ footer, header, hgroup, menu, nav, section {
         #notifications span {line-height:30px;height:30px;}
         .windows #notifications span {line-height:34px;}
 
-        #playercount {font-size:16px;left:717px;top:10px;width:114px;text-align:center;}
         #population {background-size:960px;right:70px;bottom:44px;width:262px;background-position:-480px -96px;font-size:14px;line-height:20px;}
         #population.visible {height:64px;}
         #instance-population {padding-top:12px;}
@@ -986,7 +981,6 @@ footer, header, hgroup, menu, nav, section {
         #notifications div.top {top:-15px;}
         #notifications span {line-height:15px;height:15px;}
 
-        #playercount {font-size:10px;left:358px;top:4px;width:57px;text-align:center;}
         #population {background-size:480px;right:35px;bottom:22px;width:131px;background-position:-240px -48px;font-size:9px;line-height:12px;}
         #population.visible {height:32px;}
         #instance-population {padding-top:5px;}
@@ -1144,9 +1138,6 @@ footer, header, hgroup, menu, nav, section {
 
         #notifications {display:none;}
 
-        #playercount {font-size:20px;left:270px;top:10px;width:114px;text-align:center;}
-        #playercount span {display:none;}
-        #playercount span.count {display:inline;}
 
         .barbutton {background-size:960px;height:30px;width:28px;}
         #chatbutton {background-position:-204px -34px;top:2px;left:360px;}
@@ -1218,7 +1209,7 @@ footer, header, hgroup, menu, nav, section {
 /* Workarounds for chrome windows bugs */
 
     .windows #parchment, .windows #parchment input, .windows #notifications, .windows #instructions, .windows #achievements, .windows #achievement-notification, 
-    .windows #playercount, .windows #credits, .windows #loadcharacter, .windows #confirmation, .windows #death, .windows #error, .windows #about, 
+    .windows #credits, .windows #loadcharacter, .windows #confirmation, .windows #death, .windows #error, .windows #about,
     .windows #parchment p, .windows #portrait p, .windows .alert, .windows footer, .windows .bubble p, .windows #population {font-family:'AdvoCut';}
 
 /* Workarounds for opera's lack of pointer-events support */

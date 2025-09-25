@@ -4,12 +4,13 @@ var fs = require('fs'),
 
 
 function main(config) {
-    var ws = require("./ws"),
+    var WebsocketServer = require("./ws"),
         WorldServer = require("./worldserver"),
-        Log = require('log'),
+        Player = require('./player'),
         _ = require('underscore'),
-        server = new ws.MultiVersionWebsocketServer(config.port),
-        metrics = config.metrics_enabled ? new Metrics(config) : null;
+        server = new WebsocketServer(config.port),
+        metrics = config.metrics_enabled ? new Metrics(config) : null,
+        log = createLogger(config.debug_level),
         worlds = [],
         lastTotalPlayers = 0,
         checkPopulationInterval = setInterval(function() {
@@ -25,16 +26,8 @@ function main(config) {
             }
         }, 1000);
     
-    switch(config.debug_level) {
-        case "error":
-            log = new Log(Log.ERROR); break;
-        case "debug":
-            log = new Log(Log.DEBUG); break;
-        case "info":
-            log = new Log(Log.INFO); break;
-    };
-    
     log.info("Starting BrowserQuest game server...");
+    global.log = log;
     
     server.onConnect(function(connection) {
         var world, // the one in which the player will be spawned
@@ -106,6 +99,31 @@ function getWorldDistribution(worlds) {
         distribution.push(world.playerCount);
     });
     return distribution;
+}
+
+function createLogger(level) {
+    var levels = ['error', 'info', 'debug'];
+    var normalized = (level || 'info').toLowerCase();
+    var idx = levels.indexOf(normalized);
+    if(idx === -1) {
+        idx = 1;
+    }
+
+    return {
+        error: function() {
+            console.error.apply(console, arguments);
+        },
+        info: function() {
+            if(idx >= 1) {
+                console.log.apply(console, arguments);
+            }
+        },
+        debug: function() {
+            if(idx >= 2) {
+                console.debug.apply(console, arguments);
+            }
+        }
+    };
 }
 
 function getConfigFile(path, callback) {

@@ -232,7 +232,7 @@ module.exports = Player = Character.extend({
             }
         });
         
-        this.connection.sendUTF8("go"); // Notify client that the HELLO/WELCOME handshake can start
+        this.connection.send("go"); // Notify client that the HELLO/WELCOME handshake can start
     },
     
     destroy: function() {
@@ -377,7 +377,7 @@ module.exports = Player = Character.extend({
     },
     
     timeout: function() {
-        this.connection.sendUTF8("timeout");
+        this.connection.send("timeout");
         this.connection.close("Player was idle for too long");
     }
 });

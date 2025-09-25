@@ -55,13 +55,9 @@ define(['jquery', 'app'], function($, App) {
                 app.hideWindows();
         	});
         	
-        	$('#playercount').click(function() {
-        	    app.togglePopulationInfo();
-        	});
-        	
-        	$('#population').click(function() {
-        	    app.togglePopulationInfo();
-        	});
+        $('#population').click(function() {
+            app.togglePopulationInfo();
+        });
 	
         	$('.clickable').click(function(event) {
                 event.stopPropagation();
@@ -205,18 +201,15 @@ define(['jquery', 'app'], function($, App) {
     		    $('#hitpoints').toggleClass('invincible');
     		});
 
-    		game.onNbPlayersChange(function(worldPlayers, totalPlayers) {
-    		    var setWorldPlayersString = function(string) {
-        		        $("#instance-population").find("span:nth-child(2)").text(string);
-        		        $("#playercount").find("span:nth-child(2)").text(string);
-        		    },
-        		    setTotalPlayersString = function(string) {
-        		        $("#world-population").find("span:nth-child(2)").text(string);
-        		    };
-    		    
-    		    $("#playercount").find("span.count").text(worldPlayers);
-    		    
-    		    $("#instance-population").find("span").text(worldPlayers);
+        game.onNbPlayersChange(function(worldPlayers, totalPlayers) {
+            var setWorldPlayersString = function(string) {
+                        $("#instance-population").find("span:nth-child(2)").text(string);
+                    },
+                    setTotalPlayersString = function(string) {
+                        $("#world-population").find("span:nth-child(2)").text(string);
+                    };
+
+            $("#instance-population").find("span").text(worldPlayers);
     		    if(worldPlayers == 1) {
     		        setWorldPlayersString("player");
     		    } else {

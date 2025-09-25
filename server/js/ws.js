@@ -1,294 +1,335 @@
+const http = require('http');
+const { parse } = require('url');
+const fs = require('fs');
+const path = require('path');
+const WebSocket = require('ws');
+const _ = require('underscore');
+const Utils = require('./utils');
 
-var cls = require("./lib/class"),
-    url = require('url'),
-    wsserver = require("websocket-server"),
-    miksagoConnection = require('websocket-server/lib/ws/connection'),
-    worlizeRequest = require('websocket').request,
-    http = require('http'),
-    Utils = require('./utils'),
-    _ = require('underscore'),
-    BISON = require('bison'),
-    WS = {},
-    useBison = false;
+const { Class } = require('./lib/class');
 
-module.exports = WS;
-
-
-/**
- * Abstract Server and Connection classes
- */
-var Server = cls.Class.extend({
-    init: function(port) {
-        this.port = port;
-    },
-    
-    onConnect: function(callback) {
-        this.connection_callback = callback;
-    },
-    
-    onError: function(callback) {
-        this.error_callback = callback;
-    },
-    
-    broadcast: function(message) {
-        throw "Not implemented";
-    },
-    
-    forEachConnection: function(callback) {
-        _.each(this._connections, callback);
-    },
-    
-    addConnection: function(connection) {
-        this._connections[connection.id] = connection;
-    },
-    
-    removeConnection: function(id) {
-        delete this._connections[id];
-    },
-    
-    getConnection: function(id) {
-        return this._connections[id];
+function logInfo(message) {
+    if (typeof log !== 'undefined' && log && typeof log.info === 'function') {
+        log.info(message);
+    } else {
+        console.info(message);
     }
-});
+}
 
+function logError(message) {
+    if (typeof log !== 'undefined' && log && typeof log.error === 'function') {
+        log.error(message);
+    } else {
+        console.error(message);
+    }
+}
 
-var Connection = cls.Class.extend({
-    init: function(id, connection, server) {
-        this._connection = connection;
-        this._server = server;
+const Connection = Class.extend({
+    init: function(id, socket, server) {
         this.id = id;
+        this._socket = socket;
+        this._server = server;
+        this.listen_callback = null;
+        this.close_callback = null;
+
+        const self = this;
+
+        socket.on('message', function(raw) {
+            if (!self.listen_callback) {
+                return;
+            }
+
+            let payload = raw;
+            if (Buffer.isBuffer(payload)) {
+                payload = payload.toString('utf8');
+            }
+
+            if (typeof payload !== 'string') {
+                // Unsupported payload type (e.g. ArrayBuffer). Close connection politely.
+                self.close('Unsupported message type');
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(payload);
+                self.listen_callback(parsed);
+            } catch (err) {
+                self.close('Received message was not valid JSON.');
+            }
+        });
+
+        const handleClose = function() {
+            if (self.close_callback) {
+                self.close_callback();
+            }
+            self._server.removeConnection(self.id);
+        };
+
+        socket.on('close', handleClose);
+        socket.on('error', function(err) {
+            if (self._server.error_callback) {
+                self._server.error_callback(err);
+            } else {
+                logError(err);
+            }
+        });
     },
-    
-    onClose: function(callback) {
-        this.close_callback = callback;
-    },
-    
+
     listen: function(callback) {
         this.listen_callback = callback;
     },
-    
-    broadcast: function(message) {
-        throw "Not implemented";
+
+    onClose: function(callback) {
+        this.close_callback = callback;
     },
-    
+
     send: function(message) {
-        throw "Not implemented";
+        if (!this._socket || this._socket.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        let payload = message;
+        if (typeof payload !== 'string') {
+            try {
+                payload = JSON.stringify(payload);
+            } catch (err) {
+                logError('Unable to serialize message for transport: ' + err.message);
+                return;
+            }
+        }
+
+        if (!this._socket || this._socket.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        this._socket.send(payload);
     },
-    
-    sendUTF8: function(data) {
-        throw "Not implemented";
-    },
-    
-    close: function(logError) {
-        log.info("Closing connection to "+this._connection.remoteAddress+". Error: "+logError);
-        this._connection.close();
+
+    close: function(reason) {
+        if (!this._socket || this._socket.readyState === WebSocket.CLOSED) {
+            return;
+        }
+
+        const message = reason ? String(reason) : 'Closing connection';
+        logInfo('Closing connection ' + this.id + '. Reason: ' + message);
+
+        try {
+            this._socket.close(1000, message.substring(0, 120));
+        } catch (err) {
+            logError('Error while closing connection ' + this.id + ': ' + err.message);
+            this._socket.terminate();
+        }
     }
 });
 
+const STATIC_CONTENT_TYPES = {
+    '.html': 'text/html',
+    '.css': 'text/css',
+    '.js': 'text/javascript',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2',
+    '.ttf': 'font/ttf',
+    '.mp3': 'audio/mpeg',
+    '.ogg': 'audio/ogg'
+};
 
+function createStaticMappings() {
+    const clientBuildDir = path.resolve(__dirname, '../../client-build');
+    const clientDir = path.resolve(__dirname, '../../client');
+    const sharedDir = path.resolve(__dirname, '../../shared');
 
-/**
- * MultiVersionWebsocketServer
- * 
- * Websocket server supporting draft-75, draft-76 and version 08+ of the WebSocket protocol.
- * Fallback for older protocol versions borrowed from https://gist.github.com/1219165
- */
-WS.MultiVersionWebsocketServer = Server.extend({
-    worlizeServerConfig: {
-        // All options *except* 'httpServer' are required when bypassing
-        // WebSocketServer.
-        maxReceivedFrameSize: 0x10000,
-        maxReceivedMessageSize: 0x100000,
-        fragmentOutgoingMessages: true,
-        fragmentationThreshold: 0x4000,
-        keepalive: true,
-        keepaliveInterval: 20000,
-        assembleFragments: true,
-        // autoAcceptConnections is not applicable when bypassing WebSocketServer
-        // autoAcceptConnections: false,
-        disableNagleAlgorithm: true,
-        closeTimeout: 5000
-    },
-    _connections: {},
-    _counter: 0,
-    
+    const hasClientBuild = fs.existsSync(clientBuildDir) && fs.statSync(clientBuildDir).isDirectory();
+
+    const primaryDir = hasClientBuild ? clientBuildDir : clientDir;
+
+    return [
+        { prefix: '/shared/', directory: sharedDir },
+        { prefix: '/', directory: primaryDir }
+    ];
+}
+
+const staticMappings = createStaticMappings();
+const allowedRoots = staticMappings.map((mapping) => mapping.directory);
+
+function resolveStaticFile(requestPath) {
+    let mapping = staticMappings.find((entry) => requestPath.startsWith(entry.prefix));
+
+    if (!mapping) {
+        mapping = staticMappings[staticMappings.length - 1];
+    }
+
+    let relativePath = requestPath.slice(mapping.prefix.length);
+    if (relativePath === '' || relativePath === '/') {
+        relativePath = 'index.html';
+    }
+
+    const normalized = path
+        .normalize(relativePath)
+        .replace(/^([.\\/]+)+/, '');
+
+    const filePath = path.join(mapping.directory, normalized);
+
+    if (!allowedRoots.some((root) => filePath.startsWith(root))) {
+        return null;
+    }
+
+    return filePath;
+}
+
+function serveStatic(req, res) {
+    const { pathname } = parse(req.url || '/');
+    const decodedPath = decodeURIComponent(pathname);
+    const filePath = resolveStaticFile(decodedPath);
+
+    if (!filePath) {
+        res.writeHead(403);
+        res.end('Forbidden');
+        return true;
+    }
+
+    let resolvedPath = filePath;
+    try {
+        const stats = fs.statSync(resolvedPath);
+        if (stats.isDirectory()) {
+            resolvedPath = path.join(resolvedPath, 'index.html');
+            if (!allowedRoots.some((root) => resolvedPath.startsWith(root))) {
+                res.writeHead(403);
+                res.end('Forbidden');
+                return true;
+            }
+        }
+    } catch (err) {
+        res.writeHead(404);
+        res.end('Not found');
+        return true;
+    }
+
+    try {
+        const data = fs.readFileSync(resolvedPath);
+        const ext = path.extname(resolvedPath).toLowerCase();
+        const type = STATIC_CONTENT_TYPES[ext] || 'application/octet-stream';
+        res.writeHead(200, { 'Content-Type': type });
+        res.end(data);
+        return true;
+    } catch (err) {
+        logError('Error reading static file: ' + resolvedPath + ' - ' + err.message);
+        res.writeHead(500);
+        res.end('Internal server error');
+        return true;
+    }
+}
+
+const WebsocketServer = Class.extend({
     init: function(port) {
-        var self = this;
-        
-        this._super(port);
-        
-        this._httpServer = http.createServer(function(request, response) {
-            var path = url.parse(request.url).pathname;
-            switch(path) {
-                case '/status':
-                    if(self.status_callback) {
-                        response.writeHead(200);
-                        response.write(self.status_callback());
-                        break;
-                    }
-                default:
-                    response.writeHead(404);
-            }
-            response.end();
-        });
-        this._httpServer.listen(port, function() {
-            log.info("Server is listening on port "+port);
-        });
-        
-        this._miksagoServer = wsserver.createServer();
-        this._miksagoServer.server = this._httpServer;
-        this._miksagoServer.addListener('connection', function(connection) {
-            // Add remoteAddress property
-            connection.remoteAddress = connection._socket.remoteAddress;
+        this.port = port;
+        this._connections = {};
+        this._counter = 0;
+        this.connection_callback = null;
+        this.error_callback = null;
+        this.status_callback = null;
 
-            // We want to use "sendUTF" regardless of the server implementation
-            connection.sendUTF = connection.send;
-            var c = new WS.miksagoWebSocketConnection(self._createId(), connection, self);
-            
-            if(self.connection_callback) {
-                self.connection_callback(c);
-            }
-            self.addConnection(c);
+        this._httpServer = http.createServer(this._handleHttpRequest.bind(this));
+        this._httpServer.on('error', this._handleServerError.bind(this));
+
+        const self = this;
+        this._httpServer.listen(port, function() {
+            logInfo('Server is listening on port ' + port);
         });
-        
-        this._httpServer.on('upgrade', function(req, socket, head) {
-            if (typeof req.headers['sec-websocket-version'] !== 'undefined') {
-                // WebSocket hybi-08/-09/-10 connection (WebSocket-Node)
-                var wsRequest = new worlizeRequest(socket, req, self.worlizeServerConfig);
+
+        this._wsServer = new WebSocket.Server({ server: this._httpServer });
+        this._wsServer.on('connection', function(socket) {
+            self._handleConnection(socket);
+        });
+        this._wsServer.on('error', this._handleServerError.bind(this));
+    },
+
+    _handleHttpRequest: function(req, res) {
+        const { pathname } = parse(req.url || '/');
+
+        if (pathname === '/status' && req.method === 'GET') {
+            if (this.status_callback) {
                 try {
-                    wsRequest.readHandshake();
-                    var wsConnection = wsRequest.accept(wsRequest.requestedProtocols[0], wsRequest.origin);
-                    var c = new WS.worlizeWebSocketConnection(self._createId(), wsConnection, self);
-                    if(self.connection_callback) {
-                        self.connection_callback(c);
-                    }
-                    self.addConnection(c);
-                }
-                catch(e) {
-                    console.log("WebSocket Request unsupported by WebSocket-Node: " + e.toString());
-                    return;
+                    const body = this.status_callback();
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(body);
+                } catch (err) {
+                    logError('Error while resolving /status: ' + err.message);
+                    res.writeHead(500);
+                    res.end();
                 }
             } else {
-                // WebSocket hixie-75/-76/hybi-00 connection (node-websocket-server)
-                if (req.method === 'GET' &&
-                    (req.headers.upgrade && req.headers.connection) &&
-                    req.headers.upgrade.toLowerCase() === 'websocket' &&
-                    req.headers.connection.toLowerCase() === 'upgrade') {
-                    new miksagoConnection(self._miksagoServer.manager, self._miksagoServer.options, req, socket, head);
-                }
+                res.writeHead(404);
+                res.end();
             }
-        });
+        } else {
+            if (!serveStatic(req, res)) {
+                res.writeHead(404);
+                res.end();
+            }
+        }
     },
-    
+
+    _handleServerError: function(err) {
+        if (this.error_callback) {
+            this.error_callback(err);
+        } else {
+            logError(err);
+        }
+    },
+
+    _handleConnection: function(socket) {
+        const connection = new Connection(this._createId(), socket, this);
+        this.addConnection(connection);
+
+        if (this.connection_callback) {
+            this.connection_callback(connection);
+        }
+    },
+
     _createId: function() {
         return '5' + Utils.random(99) + '' + (this._counter++);
     },
-    
+
+    onConnect: function(callback) {
+        this.connection_callback = callback;
+    },
+
+    onError: function(callback) {
+        this.error_callback = callback;
+    },
+
+    onRequestStatus: function(callback) {
+        this.status_callback = callback;
+    },
+
+    addConnection: function(connection) {
+        this._connections[connection.id] = connection;
+    },
+
+    removeConnection: function(id) {
+        delete this._connections[id];
+    },
+
+    getConnection: function(id) {
+        return this._connections[id];
+    },
+
+    forEachConnection: function(callback) {
+        _.each(this._connections, callback);
+    },
+
     broadcast: function(message) {
         this.forEachConnection(function(connection) {
             connection.send(message);
         });
-    },
-    
-    onRequestStatus: function(status_callback) {
-        this.status_callback = status_callback;
     }
 });
 
+module.exports = WebsocketServer;
 
-/**
- * Connection class for Websocket-Node (Worlize)
- * https://github.com/Worlize/WebSocket-Node
- */
-WS.worlizeWebSocketConnection = Connection.extend({
-    init: function(id, connection, server) {
-        var self = this;
-        
-        this._super(id, connection, server);
-        
-        this._connection.on('message', function(message) {
-            if(self.listen_callback) {
-                if(message.type === 'utf8') {
-                    if(useBison) {
-                        self.listen_callback(BISON.decode(message.utf8Data));
-                    } else {
-                        try {
-                            self.listen_callback(JSON.parse(message.utf8Data));
-                        } catch(e) {
-                            if(e instanceof SyntaxError) {
-                                self.close("Received message was not valid JSON.");
-                            } else {
-                                throw e;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        
-        this._connection.on('close', function(connection) {
-            if(self.close_callback) {
-                self.close_callback();
-            }
-            delete self._server.removeConnection(self.id);
-        });
-    },
-    
-    send: function(message) {
-        var data;
-        if(useBison) {
-            data = BISON.encode(message);
-        } else {
-            data = JSON.stringify(message);
-        }
-        this.sendUTF8(data);
-    },
-    
-    sendUTF8: function(data) {
-        this._connection.sendUTF(data);
-    }
-});
-
-
-/**
- * Connection class for websocket-server (miksago)
- * https://github.com/miksago/node-websocket-server
- */
-WS.miksagoWebSocketConnection = Connection.extend({
-    init: function(id, connection, server) {
-        var self = this;
-        
-        this._super(id, connection, server);
-        
-        this._connection.addListener("message", function(message) {
-            if(self.listen_callback) {
-                if(useBison) {
-                    self.listen_callback(BISON.decode(message));
-                } else {
-                    self.listen_callback(JSON.parse(message));
-                }
-            }
-        });
-        
-        this._connection.on('close', function(connection) {
-            if(self.close_callback) {
-                self.close_callback();
-            }
-            delete self._server.removeConnection(self.id);
-        });
-    },
-    
-    send: function(message) {
-        var data;
-        if(useBison) {
-            data = BISON.encode(message);
-        } else {
-            data = JSON.stringify(message);
-        }
-        this.sendUTF8(data);
-    },
-    
-    sendUTF8: function(data) {
-        this._connection.send(data);
-    }
-});
