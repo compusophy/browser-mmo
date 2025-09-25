@@ -441,9 +441,9 @@ footer, header, hgroup, menu, nav, section {
         .button.delete {background-position:-687px -153px;}
         .button.delete:active {background-position:0 -2178px;}
         
-		#container {width:1470px;margin:0 auto;position:absolute;top:50%;margin-top:-378px;left:50%;margin-left:-735px;}
+		#container {width:100vw;height:100vh;position:absolute;top:0;left:0;margin:0;}
 		#canvasborder {padding:15px;background:url('../img/3/border.png') no-repeat;}
-		#canvas {width:100%;height:672px;}
+		#canvas {width:100%;height:100%;}
 		#fade {width:1440px;height:672px;top:15px;left:15px;}
 		
 		#instructions {height:516px;width:1251px;background-position:0 -1581px;margin-left:-624px;margin-top:-279px;color:#373737;}
@@ -600,9 +600,9 @@ footer, header, hgroup, menu, nav, section {
         .button.delete {background-position:-458px -102px;}
         .button.delete:active {background-position:0 -1452px;}
         
-		#container {width:980px;margin:0 auto;position:absolute;top:50%;margin-top:-252px;left:50%;margin-left:-490px;}
+		#container {width:100vw;height:100vh;position:absolute;top:0;left:0;margin:0;}
 		#canvasborder {padding:10px;background:url('../img/2/border.png') no-repeat;}
-		#canvas {width:100%;height:448px;}
+		#canvas {width:100%;height:100%;}
 		#fade {width:960px;height:448px;top:10px;left:10px;}
 
 		#instructions {height:344px;width:834px;background-position:0 -1054px;margin-left:-416px;margin-top:-186px;color:#373737;}
@@ -760,9 +760,9 @@ footer, header, hgroup, menu, nav, section {
         .button.delete {background-position:-458px -102px;}
         .button.delete:active {background-position:0 -1452px;}
         
-		#container {width:980px;margin:0 auto;position:absolute;top:50%;margin-top:-252px;left:50%;margin-left:-490px;}
+		#container {width:100vw;height:100vh;position:absolute;top:0;left:0;margin:0;}
 		#canvasborder {padding:10px;background:url('../img/2/border.png') no-repeat;}
-		#canvas {width:100%;height:448px;}
+		#canvas {width:100%;height:100%;}
 		#fade {width:960px;height:448px;top:10px;left:10px;}
 
 		#instructions {height:344px;width:834px;background-position:0 -1054px;margin-left:-416px;margin-top:-186px;color:#373737;}
@@ -916,9 +916,9 @@ footer, header, hgroup, menu, nav, section {
         .button.delete {background-position:-229px -51px;}
         .button.delete:active {background-position:0 -726px;}
         
-		#container {width:490px;margin:0 auto;position:absolute;top:50%;margin-top:-126px;left:50%;margin-left:-245px;}
+		#container {width:100vw;height:100vh;position:absolute;top:0;left:0;margin:0;}
 		#canvasborder {padding:5px;background:url('../img/1/border.png') no-repeat;}
-		#canvas {width:100%;height:224px;}
+		#canvas {width:100%;height:100%;}
 		#fade {width:480px;height:224px;top:5px;left:5px;}
 		
 		#instructions {height:172px;width:417px;background-position:0 -527px;margin-left:-208px;margin-top:-93px;color:#373737;}
@@ -1062,7 +1062,7 @@ footer, header, hgroup, menu, nav, section {
         body.intro {background:-webkit-gradient(radial, center center, 120, center center, 400, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/1/wood.png') repeat, #000; background-size:auto, 128px;}
         body {background:#000;}
         #logosparks {-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;display:none;}
-		#container {height:258px;width:480px;position:relative;left:50%;top:50%;margin:-128px auto 0 -240px;}
+		#container {width:100vw;height:100vh;position:absolute;top:0;left:0;margin:0;}
 		#canvasborder {background:none;padding:0;}
 		
 		#parchment, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon {background-size:422px auto;}
@@ -1177,21 +1177,17 @@ footer, header, hgroup, menu, nav, section {
         /* Adjust logo for portrait */
         #logo {height:84px;width:458px;position:absolute;top:5%;left:50%;margin-left:-229px;z-index:3;background-size:844px;}
 
-        /* Scale down game canvas for portrait */
-        #container, .game #container {
-            transform: scale(0.8);
-            transform-origin: top center;
-            margin-top: 100px;
-        }
 
-        /* Adjust UI elements for portrait */
-        #healthbar {top: 120px;}
-        #hitpoints {top: 120px;}
-        #weapon, #armor {top: 150px;}
-        #experiencebar {top: 180px;}
-        #achievements {top: 210px;}
-        #minimap {right: 10px; top: 240px;}
-        #chatbox {bottom: 10px; left: 10px; width: calc(100vw - 20px); max-width: none;}
+        /* UI elements positioned for full-screen immersion */
+        #healthbar {top: 20px; left: 20px;}
+        #hitpoints {top: 20px; left: 20px;}
+        #weapon {top: 50px; left: 20px;}
+        #armor {top: 80px; left: 20px;}
+        #experiencebar {top: 110px; left: 20px;}
+        #achievements {top: 140px; left: 20px;}
+        #minimap {right: 20px; top: 20px;}
+        #chatbox {bottom: 20px; left: 20px; width: calc(100vw - 40px); max-width: none;}
+        #population {bottom: 80px; left: 50%; transform: translateX(-50%);}
     }
     
     @media screen and (max-width: 640px) and (orientation: portrait) {
@@ -1203,21 +1199,17 @@ footer, header, hgroup, menu, nav, section {
         /* Adjust logo for small portrait screens */
         #logo {height:42px;width:229px;position:absolute;top:5%;left:50%;margin-left:-114px;z-index:3;background-size:422px;}
 
-        /* Scale down game canvas for small portrait screens */
-        #container, .game #container {
-            transform: scale(0.7);
-            transform-origin: top center;
-            margin-top: 80px;
-        }
 
-        /* Adjust UI elements for small portrait */
-        #healthbar {top: 100px;}
-        #hitpoints {top: 100px;}
-        #weapon, #armor {top: 120px;}
-        #experiencebar {top: 140px;}
-        #achievements {top: 160px;}
-        #minimap {right: 5px; top: 180px;}
-        #chatbox {bottom: 5px; left: 5px; width: calc(100vw - 10px); max-width: none; font-size: 12px;}
+        /* UI elements positioned for full-screen immersion on small screens */
+        #healthbar {top: 10px; left: 10px;}
+        #hitpoints {top: 10px; left: 10px;}
+        #weapon {top: 30px; left: 10px;}
+        #armor {top: 50px; left: 10px;}
+        #experiencebar {top: 70px; left: 10px;}
+        #achievements {top: 90px; left: 10px;}
+        #minimap {right: 10px; top: 10px;}
+        #chatbox {bottom: 10px; left: 10px; width: calc(100vw - 20px); max-width: none; font-size: 12px;}
+        #population {bottom: 50px; left: 50%; transform: translateX(-50%);}
     }
 
 /* Tablet mode */
