@@ -1180,20 +1180,55 @@ footer, header, hgroup, menu, nav, section {
 	}
 
 	@media screen and (max-width: 800px) and (orientation: portrait) {
-        #portrait {display:block;height:300px;width:300px;position:absolute;top:55%; left:50%; margin:-150px 0 0 -150px;}
-        #parchment {display:none;}
-        #container, .game #container {display:none;}
-        
-        #logo {height:84px;width:458px;position:absolute;top:10%;left:50%;margin-left:-229px;z-index:3;background-size:844px;}
-        #portrait p {color:#eee;font-family:'GraphicPixel', sans-serif;font-size:20px;text-align:center;}
-        
-        #tilt {height:120px;width:132px;background-position:-710px -82px;background-size:844px;margin:25px auto 0 auto;}
+        /* Allow game to work in portrait mode */
+        #portrait {display:none;} /* Hide the portrait message */
+        #parchment {display:block;} /* Show parchment in portrait */
+        #container, .game #container {display:block;} /* Show game container */
+
+        /* Adjust logo for portrait */
+        #logo {height:84px;width:458px;position:absolute;top:5%;left:50%;margin-left:-229px;z-index:3;background-size:844px;}
+
+        /* Scale down game canvas for portrait */
+        #container, .game #container {
+            transform: scale(0.8);
+            transform-origin: top center;
+            margin-top: 100px;
+        }
+
+        /* Adjust UI elements for portrait */
+        #healthbar {top: 120px;}
+        #hitpoints {top: 120px;}
+        #weapon, #armor {top: 150px;}
+        #experiencebar {top: 180px;}
+        #achievements {top: 210px;}
+        #minimap {right: 10px; top: 240px;}
+        #chatbox {bottom: 10px; left: 10px; width: calc(100vw - 20px); max-width: none;}
     }
     
     @media screen and (max-width: 640px) and (orientation: portrait) {
-        #portrait {display:block;height:300px;width:300px;position:absolute;top:70%; left:50%; margin:-150px 0 0 -150px;}
-        
-        #logo {height:42px;width:229px;position:absolute;top:10%;left:50%;margin-left:-114px;z-index:3;background-size:422px;}
+        /* Allow game to work in portrait mode on small screens */
+        #portrait {display:none;} /* Hide the portrait message */
+        #parchment {display:block;} /* Show parchment in portrait */
+        #container, .game #container {display:block;} /* Show game container */
+
+        /* Adjust logo for small portrait screens */
+        #logo {height:42px;width:229px;position:absolute;top:5%;left:50%;margin-left:-114px;z-index:3;background-size:422px;}
+
+        /* Scale down game canvas for small portrait screens */
+        #container, .game #container {
+            transform: scale(0.7);
+            transform-origin: top center;
+            margin-top: 80px;
+        }
+
+        /* Adjust UI elements for small portrait */
+        #healthbar {top: 100px;}
+        #hitpoints {top: 100px;}
+        #weapon, #armor {top: 120px;}
+        #experiencebar {top: 140px;}
+        #achievements {top: 160px;}
+        #minimap {right: 5px; top: 180px;}
+        #chatbox {bottom: 5px; left: 5px; width: calc(100vw - 10px); max-width: none; font-size: 12px;}
     }
 
 /* Tablet mode */
