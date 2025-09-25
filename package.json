@@ -2,10 +2,11 @@
     "name": "BrowserQuest",
     "version": "0.0.1",
     "private": false,
-    "scripts": {
-        "serve-client": "node serve-client.js",
-        "start": "node server/js/main.js"
-    },
+  "scripts": {
+    "serve-client": "node serve-client.js",
+    "start": "node server/js/main.js",
+    "build": "echo 'No build needed for this app'"
+  },
     "dependencies": {
         "log": "^6.3.1",
         "memcached": "^2.2.2",
