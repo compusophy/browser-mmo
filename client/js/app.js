@@ -363,32 +363,6 @@ define(['jquery', 'storage'], function($, Storage) {
             $el.find('.achievement-description').html(desc);
         },
 
-        toggleCredits: function() {
-            var currentState = $('#parchment').attr('class');
-
-            if(this.game.started) {
-                $('#parchment').removeClass().addClass('credits');
-                
-                $('body').toggleClass('credits');
-                    
-                if(!this.game.player) {
-                    $('body').toggleClass('death');
-                }
-                if($('body').hasClass('about')) {
-                    this.closeInGameAbout();
-                    $('#helpbutton').removeClass('active');
-                }
-            } else {
-                if(currentState !== 'animate') {
-                    if(currentState === 'credits') {
-                        this.animateParchment(currentState, this.previousState);
-                    } else {
-            	        this.animateParchment(currentState, 'credits');
-            	        this.previousState = currentState;
-            	    }
-                }
-            }
-        },
         
         toggleAbout: function() {
             var currentState = $('#parchment').attr('class');

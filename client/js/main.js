@@ -63,9 +63,6 @@ define(['jquery', 'app'], function($, App) {
                 event.stopPropagation();
         	});
 	
-        	$('#toggle-credits').click(function() {
-        	    app.toggleCredits();
-        	});
 	
         	$('#create-new span').click(function() {
         	    app.animateParchment('loadcharacter', 'confirmation');
