@@ -130,7 +130,6 @@ footer, header, hgroup, menu, nav, section {
         
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, #tilt, .parchment-left, .parchment-middle, .parchment-right, .avatar, .facebook, .twitter, .close, #note, .ribbon .top, .ribbon .bottom, #about .img, .ext-link {background:url('../img/1/spritesheet.png');image-rendering:-moz-crisp-edges; image-rendering:-webkit-optimize-contrast;}
     
-    #moztab {height:49px;width:118px;position:fixed;top:0;right:15%;background:url('../img/1/spritesheet.png') no-repeat -229px -204px;display:block;}
 
     #vignetting {height:100%;width:100%;position:absolute;top:0;left:0;pointer-events:none;}
     #logosparks {display:block;position:absolute;top:0;left:0;}
@@ -220,17 +219,9 @@ footer, header, hgroup, menu, nav, section {
     .intro footer {opacity:1;}
     footer:hover {opacity:1;}
     footer div  {display:inline-block;}
-    #sharing a {display:block;float:right;background-size:844px;position:relative;top:-2px;}
-    #sharing .facebook {height:22px;width:22px;background-position:-822px -224px;margin:0 12px 0 12px;}
-    #sharing .facebook:hover {background-position:-822px -224px;}
-    #sharing .twitter {height:22px;width:32px;background-position:-770px -224px;margin:0 12px 0 0;}
-    #sharing .twitter:hover {background-position:-770px -224px;}
-    #sharing .gplus {height:22px;width:22px;background:url('../img/common/gplus.png');margin:0 12px 0 0px;}
     #credits-link span {display:inline-block;margin-left:12px;}
     #credits-link span:hover {color:#fcda5c;cursor:pointer;}
     
-    #sharing a:hover {-moz-transform:scale(1.2);-webkit-transform:scale(1.2);-o-transform:scale(1.2);transform:scale(1.2);}
-    #sharing a:active {-moz-transform:scale(1);-webkit-transform:scale(1);-o-transform:scale(1);transform:scale(1);}
 
     .close {position:absolute;z-index:20000;}
     .close:hover {cursor:pointer;}
@@ -551,7 +542,6 @@ footer, header, hgroup, menu, nav, section {
         #seb a:hover {color:#397cd8;}
         #note {float:left;background-position:-1203px -336px;height:33px;width:30px;}
         #close-credits {margin:45px auto 0 auto;text-align:center;clear:both;font-size:20px;color:#373737;}
-        #sharing {width:240px;}
         
         /*About*/
         #about h1 span.title {max-width:400px;display:inline-block;line-height:39px;margin-top:-90px;position:relative;}
@@ -1068,7 +1058,6 @@ footer, header, hgroup, menu, nav, section {
 		.ribbon {display:none;}
         
         canvas {image-rendering:optimizeSpeed;}
-        #moztab {display:none;}
         body.intro {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood.png') repeat, #000; background-size:auto, 128px;}
         body.intro {background:-webkit-gradient(radial, center center, 120, center center, 400, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/1/wood.png') repeat, #000; background-size:auto, 128px;}
         body {background:#000;}
