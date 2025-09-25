@@ -201,8 +201,15 @@ function serveStatic(req, res) {
             }
         }
     } catch (err) {
-        res.writeHead(404);
-        res.end('Not found');
+        const ext = path.extname(resolvedPath).toLowerCase();
+        if (ext === '.json') {
+            // Return JSON error for JSON requests
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Not found' }));
+        } else {
+            res.writeHead(404);
+            res.end('Not found');
+        }
         return true;
     }
 

@@ -10,7 +10,17 @@ function main(config) {
         _ = require('underscore'),
         port = Number(process.env.PORT || config.port || 8000),
         log = createLogger(config.debug_level),
-        server = new WebsocketServer(port, log),
+        server = new WebsocketServer(port, log);
+
+        // Set up health check callback
+        server.onRequestStatus(function() {
+            return JSON.stringify({
+                status: 'ok',
+                uptime: process.uptime(),
+                worlds: worlds.length,
+                players: worlds.reduce((total, world) => total + world.playerCount, 0)
+            });
+        });
         metrics = config.metrics_enabled ? new Metrics(config) : null,
         worlds = [],
         lastTotalPlayers = 0,
@@ -91,7 +101,7 @@ function main(config) {
     }
     
     process.on('uncaughtException', function (e) {
-        log.error('uncaughtException: ' + e);
+        console.error('uncaughtException:', e);
     });
 }
 
